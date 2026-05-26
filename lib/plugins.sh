@@ -8,12 +8,12 @@ PLUGINS_DIR="$HOME/.addons-zsh"
 _clone_plugin() {
   local name="$1" url="$2"
   local dest="$PLUGINS_DIR/$name"
-  if [ -d "$dest/.git" ]; then
+  if [ -d "$dest" ]; then
     ok "ya existe: $name"
     return 0
   fi
   info "clonando: $name"
-  if git clone --depth 1 "$url" "$dest"; then
+  if run git clone --depth 1 "$url" "$dest"; then
     ok "instalado: $name"
   else
     err "falló: $name"
