@@ -25,6 +25,23 @@ export DRY_RUN="${DRY_RUN:-0}"
 . "$SETUP_DIR/lib/plugins.sh"
 . "$SETUP_DIR/lib/links.sh"
 
+# ── Shell default ────────────────────────────────────────────────────────────
+_set_default_shell() {
+  step "Shell por defecto"
+  local zsh_bin
+  zsh_bin="$(command -v zsh)"
+  if [ "$SHELL" = "$zsh_bin" ]; then
+    ok "zsh ya es el shell activo"
+    return 0
+  fi
+  case "$PLATFORM" in
+    termux) run chsh -s zsh ;;
+    debian) run chsh -s "$zsh_bin" ;;
+    macos)  info "macOS: cambia shell con chsh manualmente si es necesario" ;;
+  esac
+  ok "Shell cambiado a zsh — reinicia la terminal"
+}
+
 # ── Main ─────────────────────────────────────────────────────────────────────
 init_platform
 
@@ -33,6 +50,8 @@ pkg_install_file "$SETUP_DIR/packages/$PLATFORM.env"
 install_plugins
 
 link_dotfiles
+
+_set_default_shell
 
 verify_plugins
 
