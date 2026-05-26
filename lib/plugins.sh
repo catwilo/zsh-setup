@@ -1,49 +1,74 @@
-# plugins.sh — clone zsh plugins from upstream GitHub
-# Requires: core.sh
-# Plugins are NOT committed — install only via this script
+# plugins.sh — install zsh plugins from dotconfig bundle or upstream fallback
+# Requires: core.sh, detect.sh (PLATFORM set via init_platform)
+#
+# Strategy (in order):
+#   1. Copy from dotconfig/.addons-zsh/<name>  (your curated builds, no network)
+#   2. git clone upstream                       (fallback if dotconfig missing)
+#
+# aliass/ is a dotfile — linked by dotconfig/install.sh, NOT handled here.
 
 PLUGINS_DIR="$HOME/.addons-zsh"
+PLUGINS_LIST="fzf fzf-tab zsh-autosuggestions fast-syntax-highlighting"
 
-# ── Clone single plugin (idempotent) ─────────────────────────────────────────
-_clone_plugin() {
-  local name="$1" url="$2"
+_plugin_upstream() {
+  case "$1" in
+    fzf)                      echo "https://github.com/junegunn/fzf" ;;
+    fzf-tab)                  echo "https://github.com/Aloxaf/fzf-tab" ;;
+    zsh-autosuggestions)      echo "https://github.com/zsh-users/zsh-autosuggestions" ;;
+    fast-syntax-highlighting) echo "https://github.com/zdharma-continuum/fast-syntax-highlighting" ;;
+    *) echo "" ;;
+  esac
+}
+
+_find_dotconfig() {
+  for c in "$HOME/unix-toolkit-tools/dotconfig" "$HOME/unix-toolkit/dotconfig"; do
+    [ -d "$c/.addons-zsh" ] && { echo "$c"; return; }
+  done
+  echo ""
+}
+
+_install_plugin() {
+  local name="$1" dotconfig="$2"
   local dest="$PLUGINS_DIR/$name"
   if [ -d "$dest" ]; then
     ok "ya existe: $name"
     return 0
   fi
-  info "clonando: $name"
-  if run git clone --depth 1 "$url" "$dest"; then
-    ok "instalado: $name"
-  else
-    err "falló: $name"
-    return 1
+  if [ -n "$dotconfig" ] && [ -d "$dotconfig/.addons-zsh/$name" ]; then
+    info "copiando desde dotconfig: $name"
+    run cp -r "$dotconfig/.addons-zsh/$name" "$dest" && ok "instalado: $name" && return 0
+    err "falló copia: $name"
   fi
+  local url
+  url="$(_plugin_upstream "$name")"
+  [ -z "$url" ] && { err "sin upstream para: $name"; return 1; }
+  info "clonando upstream: $name"
+  run git clone --depth 1 "$url" "$dest" && ok "instalado: $name" && return 0
+  err "falló clone: $name"
+  return 1
 }
 
-# ── Install all plugins ──────────────────────────────────────────────────────
 install_plugins() {
   step "Instalando plugins zsh"
-  require_cmd git
   mkdir -p "$PLUGINS_DIR"
-  local failed=0
-  _clone_plugin fzf                      "https://github.com/junegunn/fzf"                               || failed=$((failed+1))
-  _clone_plugin fzf-tab                  "https://github.com/Aloxaf/fzf-tab"                             || failed=$((failed+1))
-  _clone_plugin zsh-autosuggestions      "https://github.com/zsh-users/zsh-autosuggestions"              || failed=$((failed+1))
-  _clone_plugin fast-syntax-highlighting "https://github.com/zdharma-continuum/fast-syntax-highlighting" || failed=$((failed+1))
-  [ "$failed" -gt 0 ] && die "$failed plugin(s) fallaron al instalar"
+  local dotconfig failed=0
+  dotconfig="$(_find_dotconfig)"
+  [ -n "$dotconfig" ] && info "bundle: $dotconfig/.addons-zsh" || warn "dotconfig no encontrado — usando upstream"
+  for name in $PLUGINS_LIST; do
+    _install_plugin "$name" "$dotconfig" || failed=$((failed+1))
+  done
+  [ "$failed" -gt 0 ] && die "$failed plugin(s) fallaron"
   ok "Todos los plugins listos en $PLUGINS_DIR"
 }
 
-# ── Verify plugins exist ─────────────────────────────────────────────────────
 verify_plugins() {
   step "Verificando plugins"
   local missing=0
-  for name in fzf fzf-tab zsh-autosuggestions fast-syntax-highlighting; do
+  for name in $PLUGINS_LIST; do
     if [ -d "$PLUGINS_DIR/$name" ]; then
       ok "plugin: $name"
     else
-      err "plugin faltante: $name"
+      err "faltante: $name"
       missing=$((missing+1))
     fi
   done
