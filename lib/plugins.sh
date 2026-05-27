@@ -2,10 +2,10 @@
 # Requires: core.sh, detect.sh (PLATFORM set via init_platform)
 #
 # Strategy (in order):
-#   1. Copy from dotconfig/.addons-zsh/<name>  (your curated builds, no network)
-#   2. git clone upstream                       (fallback if dotconfig missing)
+#   1. Copy from zsh-setup/dotfiles/.addons-zsh/<name>  (curated bundle, no network)
+#   2. git clone upstream                       (fallback if bundle missing)
 #
-# aliass/ is a dotfile — linked by dotconfig/install.sh, NOT handled here.
+# aliass/ is a dotfile — linked by dotfiles/install.sh, NOT handled here.
 
 PLUGINS_DIR="$HOME/.addons-zsh"
 PLUGINS_LIST="fzf fzf-tab zsh-autosuggestions fast-syntax-highlighting"
@@ -20,10 +20,9 @@ _plugin_upstream() {
   esac
 }
 
-_find_dotconfig() {
-  for c in "$HOME/unix-toolkit-tools/dotconfig" "$HOME/unix-toolkit/dotconfig"; do
-    [ -d "$c/.addons-zsh" ] && { echo "$c"; return; }
-  done
+_find_bundle() {
+  local b="$HOME/unix-toolkit-tools/zsh-setup/dotfiles"
+  [ -d "$b/.addons-zsh" ] && { echo "$b"; return; }
   echo ""
 }
 
@@ -35,7 +34,7 @@ _install_plugin() {
     return 0
   fi
   if [ -n "$dotconfig" ] && [ -d "$dotconfig/.addons-zsh/$name" ]; then
-    info "copiando desde dotconfig: $name"
+    info "copiando desde bundle: $name"
     run cp -r "$dotconfig/.addons-zsh/$name" "$dest" && ok "instalado: $name" && return 0
     err "falló copia: $name"
   fi
@@ -52,8 +51,8 @@ install_plugins() {
   step "Instalando plugins zsh"
   mkdir -p "$PLUGINS_DIR"
   local dotconfig failed=0
-  dotconfig="$(_find_dotconfig)"
-  [ -n "$dotconfig" ] && info "bundle: $dotconfig/.addons-zsh" || warn "dotconfig no encontrado — usando upstream"
+  dotconfig="$(_find_bundle)"
+  [ -n "$dotconfig" ] && info "bundle: $dotconfig/.addons-zsh" || warn "bundle no encontrado — usando upstream"
   for name in $PLUGINS_LIST; do
     _install_plugin "$name" "$dotconfig" || failed=$((failed+1))
   done
