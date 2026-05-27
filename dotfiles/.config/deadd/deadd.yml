@@ -1,0 +1,7 @@
+notification:
+  use-markup: true
+  default-timeout: 60000
+  icon-size: 64 
+  allow-html: true
+css: {}
+

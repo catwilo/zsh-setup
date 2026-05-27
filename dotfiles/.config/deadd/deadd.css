@@ -1,0 +1,98 @@
+/***********************************
+ * DEADD NOTIFICATION CENTER (GTK3)
+ * 100% compatible y optimizado
+ ***********************************/
+
+/* ===== Fondo general ===== */
+.blurredBG,
+#main_window,
+.blurredBG.low,
+.blurredBG.normal {
+    background: rgba(255, 255, 255, 0.55);
+    border-radius: 12px;
+}
+
+/* ===== Reloj del centro ===== */
+.noti-center.time {
+    font-size: 28px;
+    color: #222;
+    font-weight: 500;
+}
+
+/* ===== Notificaciones ===== */
+.blurredBG.notification {
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin: 8px;
+    padding: 10px 12px;
+}
+
+.blurredBG.notification.critical {
+    background: rgba(255, 0, 0, 0.12);
+    border: 1px solid rgba(255, 0, 0, 0.3);
+}
+
+/* ===== Contenido ===== */
+.notification.content {
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+.title {
+    font-weight: bold;
+    font-size: 15px;
+    color: #222;
+}
+
+.appname,
+.time {
+    font-size: 12px;
+    color: #555;
+}
+
+/* ===== Texto ===== */
+label,
+label.notification {
+    color: #222;
+}
+
+label.critical {
+    color: #000;
+}
+
+/* ===== Botones ===== */
+button {
+    background: transparent;
+    color: #333;
+    border-radius: 4px;
+    border: none;
+    text-shadow: none;
+    padding: 4px 8px;
+}
+
+button:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: #111;
+}
+
+/* ===== Botones personalizados ===== */
+.userbutton {
+    background: rgba(20, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+.userbutton:hover {
+    background: rgba(20, 0, 0, 0.15);
+}
+
+.userbuttonlabel {
+    color: #222;
+    font-size: 12px;
+}
+
+.userbuttonlabel:hover {
+    color: #111;
+}
+

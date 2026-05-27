@@ -1,0 +1,15 @@
+{
+  "tabWidth": 1,
+  "useTabs": false,
+  "semi": false,
+  "singleQuote": true,
+  "htmlWhitespaceSensitivity": "ignore",
+  "endOfLine": "lf",
+  "trailingComma": "none",
+  "printWidth": 60,
+  "bracketSameLine": true,
+  "embeddedLanguageFormatting": "auto",
+  "arrowParens": "avoid",
+  "proseWrap": "preserve",
+  "overrides": [{"files":"*.njk","options":{"parser":"html"}}]
+}

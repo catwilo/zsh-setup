@@ -1,16 +1,10 @@
-# links.sh — delegate dotfile linking to dotconfig/install.sh
+# links.sh — run dotfiles/install.sh from internal path
 # Requires: core.sh
-
-_find_dotconfig() {
-  for candidate in "$HOME/unix-toolkit-tools/dotconfig" "$HOME/unix-toolkit/dotconfig"; do
-    [ -f "$candidate/install.sh" ] && { echo "$candidate"; return; }
-  done
-  die "dotconfig no encontrado — clona el repo primero"
-}
 
 link_dotfiles() {
   step "Enlazando dotfiles"
-  local dotconfig
-  dotconfig="$(_find_dotconfig)"
-  run bash "$dotconfig/install.sh"
+  local dotfiles
+  dotfiles="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/dotfiles"
+  [ -f "$dotfiles/install.sh" ] || die "dotfiles/install.sh no encontrado en $dotfiles"
+  run bash "$dotfiles/install.sh"
 }
