@@ -1,5 +1,5 @@
 # core.sh — shared helpers: colors, logging, guards
-# Source this first in every lib module and in setup.sh
+# Source this first in every lib module and in install.sh
 
 # ── Colors ────────────────────────────────────────────────────────────────────
 if [ -t 1 ]; then

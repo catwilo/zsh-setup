@@ -24,7 +24,7 @@ detect_pkgmgr() {
   esac
 }
 
-# ── Export globals (called once from setup.sh) ────────────────────────────────
+# ── Export globals (called once from install.sh) ────────────────────────────────
 init_platform() {
   PLATFORM="$(detect_platform)"
   PKGMGR="$(detect_pkgmgr)"

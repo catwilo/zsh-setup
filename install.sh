@@ -1,6 +1,6 @@
 #!/bin/sh
-# setup.sh — zsh environment setup entrypoint
-# Usage: sh setup.sh [--mpd] [--mac] [--dry-run]
+# install.sh — zsh environment setup entrypoint
+# Usage: sh install.sh [--mpd] [--mac] [--dry-run]
 
 set -e
 
