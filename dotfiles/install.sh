@@ -27,6 +27,7 @@ fi
 info "platform: $PLATFORM"
 
 # ── shared ────────────────────────────────────────────────────────────────────
+link .zshenv
 link .zshrc
 link .zprofile
 link .gitconfig
