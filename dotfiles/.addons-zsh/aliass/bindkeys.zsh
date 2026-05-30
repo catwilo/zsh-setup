@@ -43,3 +43,11 @@ bindkey '^H' backward-delete-char      # BS insert
 bindkey '^?' backward-delete-char      # BS normal
 bindkey '^[z' undo                     # ALT+Z (Termux/tmux/X11)
 bindkey '\ez' undo                    # ALT+Z (SSH)
+
+# ── clipso widget ─────────────────────────────────────────────────────────────
+_wrap_clipso() {
+  BUFFER="{ ${BUFFER}; } 2>&1 | clipso"
+  zle accept-line
+}
+zle -N _wrap_clipso
+bindkey '^[g' _wrap_clipso              # Alt+g — wrap current line and execute via clipso

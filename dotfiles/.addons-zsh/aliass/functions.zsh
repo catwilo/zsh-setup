@@ -61,3 +61,13 @@ preexec(){
   grep -qxF -- "$1" "$HISTFILE" || echo "$1" >> "$HISTFILE"
   hist_rotate
 }
+
+# lipso: run cmd and pipe output to clipso
+# 1 arg  → eval (supports pipes/&&); multi-arg → direct (safe, no eval)
+lipso() {
+  if [[ $# -eq 1 ]]; then
+    eval "$1" 2>&1 | clipso
+  else
+    "$@" 2>&1 | clipso
+  fi
+}
