@@ -11,4 +11,3 @@ alias arch='proot-distro login archlinux --user u --termux-home'
 
 # clipboard
 alias clipso='~/unix-toolkit-tools/clipso/clipso.sh'
-clipc() { if [ "${1:-}" = -- ]; then shift; printf %s "$*" | clipso; else clipso; fi; }
