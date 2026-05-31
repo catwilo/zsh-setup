@@ -15,3 +15,6 @@ alias s.v='sudo nvim'
 alias s.r='sudo ranger'
 alias s.ctl='sudo systemctl'
 alias gitc='git add . && git commit -m'
+
+# clipboard helper — wraps any binary with clipso (2>&1 included)
+clipc() { "$@" 2>&1 | clipso; }
