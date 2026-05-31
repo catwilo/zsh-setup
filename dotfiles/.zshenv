@@ -2,4 +2,6 @@
 # Keep minimal: only exports needed before .zshrc loads
 case ":$PATH:" in *":$HOME/.local/bin:"*) ;; *) export PATH="$HOME/.local/bin:$PATH" ;; esac
 unset DSTASK_DATA  # never inherit from parent process
-case ":$PATH:" in *":$HOME/dev/spfx/bin:"*) ;; *) export PATH="$HOME/dev/spfx/bin:$PATH" ;; esac
+
+# machine-local overrides (not versioned)
+[ -f "${ZDOTDIR:-$HOME}/.zshenv.local" ] && source "${ZDOTDIR:-$HOME}/.zshenv.local"
