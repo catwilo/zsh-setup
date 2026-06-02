@@ -34,6 +34,8 @@ link .gitconfig
 link .vimrc
 link .prettierrc
 mkdir -p "$HOME/.addons-zsh"
+# remove stale dir/symlink before linking (prevents aliass/aliass/ double-nesting)
+[ -d "$HOME/.addons-zsh/aliass" ] && [ ! -L "$HOME/.addons-zsh/aliass" ] && rm -rf "$HOME/.addons-zsh/aliass"
 ln -sf "$HERE/.addons-zsh/aliass" "$HOME/.addons-zsh/aliass" && ok ".addons-zsh/aliass"
 
 # ── config subdirs ────────────────────────────────────────────────────────────
