@@ -4,7 +4,7 @@
 link_dotfiles() {
   step "Enlazando dotfiles"
   local dotfiles
-  dotfiles="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/dotfiles"
+  dotfiles="${SETUP_DIR}/dotfiles"
   [ -f "$dotfiles/install.sh" ] || die "dotfiles/install.sh no encontrado en $dotfiles"
   run bash "$dotfiles/install.sh"
 }
