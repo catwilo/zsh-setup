@@ -1,5 +1,5 @@
+alias ccc='clear'
 # shared.zsh — universal aliases (all platforms)
-
 alias nano='nvim'
 alias v='nvim'
 alias ra='ranger'
@@ -15,6 +15,5 @@ alias s.v='sudo nvim'
 alias s.r='sudo ranger'
 alias s.ctl='sudo systemctl'
 alias gitc='git add . && git commit -m'
-
 # clipboard helper — wraps any binary with clipso (2>&1 included)
 clipc() { "$@" 2>&1 | clipso; }
