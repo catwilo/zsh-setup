@@ -31,7 +31,7 @@ _clipso_to_drain() {
     local _a
     for _a in ${(s:,:)_aliases}; do
         [[ -n "$_a" ]] || continue
-        setsid "$_nclip" "$_a" < "$_payload" </dev/null >/dev/null 2>&1 &
+        setsid "$_nclip" "$_a" < "$_payload" </dev/null >/dev/null 2>&1 &!
     done
     rm -f "$_payload"
 }
