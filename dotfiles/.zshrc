@@ -56,3 +56,4 @@ esac
 case ":$PATH:" in *":/data/data/com.termux/files/usr/bin:"*) ;; *) export PATH="/data/data/com.termux/files/usr/bin:$PATH";; esac
 [ -n "$LC_NCSSH" ] && source "/data/data/com.termux/files/home/unix-toolkit-tools/noemap/lib/capture.zsh"
 # <<< noemap <<<
+setopt interactivecomments
