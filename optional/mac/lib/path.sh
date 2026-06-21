@@ -3,7 +3,7 @@
 #
 # Problem: macOS zsh non-login/non-interactive shells (what `ssh host cmd`
 # spawns) read ONLY ~/.zshenv, not ~/.zshrc. Tools installed under Nix or
-# ~/.local/bin are invisible to `nssh d1 '<cmd>'` unless .zshenv sets PATH.
+# ~/.local/bin are invisible to `nssh db '<cmd>'` unless .zshenv sets PATH.
 # This is why `noemap` and `nix` were "not found" over SSH.
 
 ensure_path_zshenv() {
