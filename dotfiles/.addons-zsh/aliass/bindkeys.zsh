@@ -45,8 +45,12 @@ bindkey '^[z' undo                     # ALT+Z (Termux/tmux/X11)
 bindkey '\ez' undo                    # ALT+Z (SSH)
 
 # ── clipso widget ─────────────────────────────────────────────────────────────
+_clipso_clean() {   # $1 = logfile, normalize script(1) output in place
+  sed -i '1{/^Script started/d}; ${/^Script done/d}; s/\x1b\[[0-9;]*[mGKHFABCDJsu]//g; s/\x1b\[?[0-9;]*[hl]//g; s/\r//g' "$1"
+}
 _wrap_clipso() {
-  BUFFER="{ ${BUFFER}; } 2>&1 | clipso"
+  local _c=$BUFFER
+  BUFFER='_c='${(q)_c}'; _l=$(mktemp "${TMPDIR:-/tmp}/clipso-run.XXXXXX"); COLUMNS=$(tput cols) LINES=$(tput lines) script -q -e -O "$_l" -c "$_c"; _clipso_clean "$_l"; clipso "$_l"; rm -f "$_l"'
   zle accept-line
 }
 zle -N _wrap_clipso
