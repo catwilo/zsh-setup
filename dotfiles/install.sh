@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# dotconfig install.sh — symlink dotfiles to $HOME based on platform
+# dotconfig install.sh — COPY dotfiles to $HOME (independent of repo) based on platform
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -11,7 +11,8 @@ err()  { printf "${R}  ✗  %s${Z}\n" "$1" >&2; }
 link() {
   local src="$HERE/$1" dst="$HOME/$1"
   mkdir -p "$(dirname "$dst")"
-  ln -sf "$src" "$dst" && ok "$1" || err "failed: $1"
+  rm -rf "$dst"
+  cp -RfL "$src" "$dst" && ok "$1" || err "failed: $1"
 }
 
 # ── platform detection ────────────────────────────────────────────────────────
@@ -34,9 +35,7 @@ link .gitconfig
 link .vimrc
 link .prettierrc
 mkdir -p "$HOME/.addons-zsh"
-# remove stale dir/symlink before linking (prevents aliass/aliass/ double-nesting)
-[ -d "$HOME/.addons-zsh/aliass" ] && [ ! -L "$HOME/.addons-zsh/aliass" ] && rm -rf "$HOME/.addons-zsh/aliass"
-ln -sf "$HERE/.addons-zsh/aliass" "$HOME/.addons-zsh/aliass" && ok ".addons-zsh/aliass"
+link .addons-zsh/aliass
 
 # ── config subdirs ────────────────────────────────────────────────────────────
 for d in ranger; do
