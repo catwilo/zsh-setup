@@ -50,7 +50,7 @@ _clipso_clean() {   # $1 = logfile, normalize script(1) output in place
 }
 _wrap_clipso() {
   local _c=$BUFFER
-  BUFFER='_c='${(q)_c}'; _l=$(mktemp "${TMPDIR:-/tmp}/clipso-run.XXXXXX"); COLUMNS=$(tput cols) LINES=$(tput lines) script -q -e -O "$_l" -c "$_c"; _clipso_clean "$_l"; clipso "$_l"; rm -f "$_l"'
+  BUFFER='_c='${(q)_c}'; _l=$(mktemp "${TMPDIR:-/tmp}/clipso-run.XXXXXX"); printf "\033[?1049h\033[2J\033[H"; COLUMNS=$(tput cols) LINES=$(tput lines) script -q -e -O "$_l" -c "$_c"; printf "\033[?1049l"; _clipso_clean "$_l"; clipso "$_l"; rm -f "$_l"'
   zle accept-line
 }
 zle -N _wrap_clipso
