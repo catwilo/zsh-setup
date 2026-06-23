@@ -45,12 +45,11 @@ bindkey '^[z' undo                     # ALT+Z (Termux/tmux/X11)
 bindkey '\ez' undo                    # ALT+Z (SSH)
 
 # ── clipso widget ─────────────────────────────────────────────────────────────
-_clipso_clean() {   # $1 = logfile, normalize script(1) output in place
-  sed -i '1{/^Script started/d}; ${/^Script done/d}; s/\x1b\[[0-9;]*[mGKHFABCDJsu]//g; s/\x1b\[?[0-9;]*[hl]//g; s/\r//g' "$1"
-}
+# Delegates to pty-run (minitools/system/pty-run) for the PTY+alt-screen logic
+# (DRY -- closes clipso#22). pty-run must be on PATH (minitools install.sh).
 _wrap_clipso() {
   local _c=$BUFFER
-  BUFFER='_c='${(q)_c}'; _l=$(mktemp "${TMPDIR:-/tmp}/clipso-run.XXXXXX"); printf "\033[?1049h\033[2J\033[H"; COLUMNS=$(tput cols) LINES=$(tput lines) script -q -e -O "$_l" -c "$_c"; printf "\033[?1049l"; _clipso_clean "$_l"; clipso "$_l"; rm -f "$_l"'
+  BUFFER='pty-run '${(q)_c}
   zle accept-line
 }
 zle -N _wrap_clipso
