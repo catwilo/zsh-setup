@@ -9,10 +9,22 @@ info() { printf "${C}  →  %s${Z}\n" "$1"; }
 err()  { printf "${R}  ✗  %s${Z}\n" "$1" >&2; }
 
 link() {
+  # Atomic copy: stage into a temp path next to dst, then mv over the old
+  # one. Never rm dst before the new copy exists -- a process kill mid-rm
+  # (e.g. Android OOM-killing Termux) must never leave dst missing.
   local src="$HERE/$1" dst="$HOME/$1"
-  mkdir -p "$(dirname "$dst")"
-  rm -rf "$dst"
-  cp -RfL "$src" "$dst" && ok "$1" || err "failed: $1"
+  local dstdir tmp
+  dstdir="$(dirname "$dst")"
+  mkdir -p "$dstdir"
+  tmp="$(mktemp -d "$dstdir/.link-tmp.XXXXXX")/$1"
+  mkdir -p "$(dirname "$tmp")"
+  if cp -RfL "$src" "$tmp"; then
+    rm -rf "$dst"
+    mv -f "$tmp" "$dst" && ok "$1" || err "failed: $1"
+  else
+    err "failed: $1"
+  fi
+  rm -rf "$(dirname "$tmp")" 2>/dev/null || true
 }
 
 # ── platform detection ────────────────────────────────────────────────────────
