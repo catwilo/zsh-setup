@@ -1,3 +1,4 @@
+# shellcheck shell=sh
 # plugins.sh — install zsh plugins from dotconfig bundle or upstream fallback
 # Requires: core.sh, detect.sh (PLATFORM set via init_platform)
 #
@@ -72,4 +73,5 @@ verify_plugins() {
     fi
   done
   [ "$missing" -gt 0 ] && die "$missing plugin(s) faltantes en $PLUGINS_DIR"
+  return 0
 }
