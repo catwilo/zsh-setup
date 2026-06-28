@@ -45,11 +45,11 @@ bindkey '^[z' undo                     # ALT+Z (Termux/tmux/X11)
 bindkey '\ez' undo                    # ALT+Z (SSH)
 
 # ── clipso widget ─────────────────────────────────────────────────────────────
-# Delegates to pty-run (minitools/system/pty-run) for the PTY+alt-screen logic
-# (DRY -- closes clipso#22). pty-run must be on PATH (minitools install.sh).
+# Delegates to clipso run, which orchestrates pty-run (PTY+alt-screen) plus
+# privacy check, display, and clipboard copy. pty-run must be on PATH (minitools).
 _wrap_clipso() {
   local _c=$BUFFER
-  BUFFER='pty-run '${(q)_c}
+  BUFFER='clipso run '${(q)_c}
   zle accept-line
 }
 zle -N _wrap_clipso
