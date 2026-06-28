@@ -44,13 +44,3 @@ bindkey '^?' backward-delete-char      # BS normal
 bindkey '^[z' undo                     # ALT+Z (Termux/tmux/X11)
 bindkey '\ez' undo                    # ALT+Z (SSH)
 
-# ── clipso widget ─────────────────────────────────────────────────────────────
-# Delegates to clipso run, which orchestrates pty-run (PTY+alt-screen) plus
-# privacy check, display, and clipboard copy. pty-run must be on PATH (minitools).
-_wrap_clipso() {
-  local _c=$BUFFER
-  BUFFER='clipso run '${(q)_c}
-  zle accept-line
-}
-zle -N _wrap_clipso
-bindkey '^[g' _wrap_clipso              # Alt+g — wrap current line and execute via clipso
