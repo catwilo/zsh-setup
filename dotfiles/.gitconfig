@@ -11,3 +11,8 @@
 	defaultBranch = main
 [push]
 	followTags = true
+[core]
+	pager = cat
+[pager]
+	branch = false
+	tag = false
