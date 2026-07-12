@@ -45,6 +45,14 @@ _set_default_shell() {
 # ── Main ─────────────────────────────────────────────────────────────────────
 init_platform
 
+# Ecosystem tools use "#!/usr/bin/env bash" -- refuse to install if bash
+# is not available on this node, so every tool behaves consistently across
+# platforms (Termux, Debian, macOS) instead of falling back to dash.
+if ! command -v bash >/dev/null 2>&1; then
+    printf 'FATAL: bash not found in PATH -- required by all ecosystem tools\n' >&2
+    exit 1
+fi
+
 pkg_install_file "$SETUP_DIR/packages/$PLATFORM.env"
 
 install_plugins
