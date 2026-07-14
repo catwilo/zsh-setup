@@ -28,9 +28,16 @@ export DRY_RUN="${DRY_RUN:-0}"
 # ── Shell default ────────────────────────────────────────────────────────────
 _set_default_shell() {
   step "Shell por defecto"
-  local zsh_bin
+  local zsh_bin link_target
   zsh_bin="$(command -v zsh)"
-  if [ "$SHELL" = "$zsh_bin" ]; then
+  # $SHELL reflects the *running* process's shell, not what a NEW Termux
+  # session will launch. Termux decides that via ~/.termux/shell, so the
+  # real check must follow that symlink, not compare against $SHELL.
+  link_target="$(readlink -f "$HOME/.termux/shell" 2>/dev/null || true)"
+  if [ "$PLATFORM" = "termux" ] && [ "$link_target" = "$zsh_bin" ]; then
+    ok "zsh ya es el shell activo"
+    return 0
+  elif [ "$PLATFORM" != "termux" ] && [ "$SHELL" = "$zsh_bin" ]; then
     ok "zsh ya es el shell activo"
     return 0
   fi
