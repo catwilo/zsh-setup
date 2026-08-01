@@ -24,6 +24,10 @@ else
 fi
 
 # ── Prompt ────────────────────────────────────────────────────────────────────
+# drain any pending terminal query responses (e.g. OSC11 background-color
+# replies) before starship's precmd hook redraws the prompt, so stray
+# escape bytes don't get echoed as literal text.
+while read -r -t 0.05 -k 1 _drain 2>/dev/null; do :; done
 eval "$(starship init zsh)"
 
 # ── Completion + vi mode ──────────────────────────────────────────────────────
