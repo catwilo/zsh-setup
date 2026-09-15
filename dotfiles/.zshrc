@@ -47,6 +47,7 @@ _al="$_addon/aliass"
 [ -f "$_al/shared.zsh"   ] && source "$_al/shared.zsh"
 [ -f "$_al/bindkeys.zsh" ] && source "$_al/bindkeys.zsh"
 [ -f "$_al/functions.zsh" ] && source "$_al/functions.zsh"
+[ -f "$_al/clipso.zsh" ] && source "$_al/clipso.zsh"
 
 case "$_PLATFORM" in
   termux) [ -f "$_al/termux.zsh" ] && source "$_al/termux.zsh" ;;
