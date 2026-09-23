@@ -122,6 +122,9 @@ hist_rotate() {
   : > "$hist_file"
 }
 preexec() {
+  [[ "$1" == "clipso run /"*  ]] && { hist_rotate; return; }
+  [[ "$1" == "clipso write "* ]] && { hist_rotate; return; }
+  [[ "$1" == "clipso paste"   ]] && { hist_rotate; return; }
   grep -qxF -- "$1" "$HISTFILE" || echo "$1" >> "$HISTFILE"
   hist_rotate
 }

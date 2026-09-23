@@ -51,13 +51,22 @@ hist_rotate(){
   hist_lines=$(wc -l < "$hist_file")
   (( hist_lines >= HIST_MAX - 10 )) && echo "historial casi lleno"
   (( hist_lines < HIST_MAX )) && return
-  local ts
+  local ts archive_dir
   ts=$(date +%y%m%d_%H%M)
-  mv "$hist_file" "$(dirname "$hist_file")/${ts}.bak"
+  archive_dir="${XDG_STATE_HOME:-$HOME/.local/state}/zsh/history-archive"
+  mkdir -p "$archive_dir"
+  mv "$hist_file" "$archive_dir/${ts}.bak"
   : > "$hist_file"
 }
 
 preexec(){
+  # HISTORY_IGNORE-compatible filter. zsh's native HISTORY_IGNORE does not
+  # fire here because this hook writes to the histfile directly. Mirror the
+  # patterns that would otherwise be dropped, so wrapper calls never reach
+  # the histfile.
+  [[ "$1" == "clipso run /"*   ]] && { hist_rotate; return; }
+  [[ "$1" == "clipso write "*  ]] && { hist_rotate; return; }
+  [[ "$1" == "clipso paste"    ]] && { hist_rotate; return; }
   grep -qxF -- "$1" "$HISTFILE" || echo "$1" >> "$HISTFILE"
   hist_rotate
 }

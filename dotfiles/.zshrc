@@ -1,11 +1,12 @@
 # .zshrc — unified config (Termux, Debian, RPi, macOS)
 
 # ── History ───────────────────────────────────────────────────────────────────
-export HISTFILE=~/.histfile
-HIST_MAX=500
+export HISTFILE=~/.local/state/zsh/histfile
+HIST_MAX=2000
 HISTSIZE=$HIST_MAX
 SAVEHIST=$HIST_MAX
 setopt HIST_IGNORE_ALL_DUPS HIST_SAVE_NO_DUPS
+HISTORY_IGNORE="clipso run /*|clipso write *|clipso paste"
 unsetopt SHARE_HISTORY INC_APPEND_HISTORY EXTENDED_HISTORY
 setopt beep extendedglob nomatch notify
 
