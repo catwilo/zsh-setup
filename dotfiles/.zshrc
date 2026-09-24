@@ -1,6 +1,7 @@
 # .zshrc — unified config (Termux, Debian, RPi, macOS)
 
 # ── History ───────────────────────────────────────────────────────────────────
+mkdir -p ~/.local/state/zsh
 export HISTFILE=~/.local/state/zsh/histfile
 HIST_MAX=2000
 HISTSIZE=$HIST_MAX
