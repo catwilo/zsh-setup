@@ -64,3 +64,33 @@ case ":$PATH:" in *":/data/data/com.termux/files/usr/bin:"*) ;; *) export PATH="
 [ -n "$LC_NCSSH" ] && source "/data/data/com.termux/files/home/unix-toolkit-tools/noemap/lib/capture.zsh"
 # <<< noemap <<<
 setopt interactivecomments
+
+# >>> bw >>>
+# Bitwarden CLI session persistence. The session token lives in a
+# private file (~/.local/state/bw/session, mode 600) written by the
+# `bwunlock` helper below. It is never echoed to the terminal or
+# written to shell history.
+if [ -r "$HOME/.local/state/bw/session" ]; then
+  BW_SESSION="$(<"$HOME/.local/state/bw/session")"
+  export BW_SESSION
+fi
+bwunlock() {
+  local _dir="$HOME/.local/state/bw"
+  local _file="$_dir/session"
+  local _tmp
+  mkdir -p "$_dir" && chmod 700 "$_dir"
+  _tmp="$(mktemp "${TMPDIR:-/tmp}/bw-session.XXXXXX")" || return 1
+  chmod 600 "$_tmp"
+  if bw unlock --raw > "$_tmp"; then
+    chmod 600 "$_tmp"
+    mv "$_tmp" "$_file"
+    BW_SESSION="$(<"$_file")"
+    export BW_SESSION
+    print "bw: session saved to $_file"
+  else
+    rm -f "$_tmp"
+    print "bw: unlock failed" >&2
+    return 1
+  fi
+}
+# <<< bw <<<
