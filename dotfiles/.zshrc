@@ -64,6 +64,29 @@ case ":$PATH:" in *":/data/data/com.termux/files/usr/bin:"*) ;; *) export PATH="
 [ -n "$LC_NCSSH" ] && source "/data/data/com.termux/files/home/unix-toolkit-tools/noemap/lib/capture.zsh"
 # <<< noemap <<<
 setopt interactivecomments
+# >>> clipso >>>
+case ":$PATH:" in *":/data/data/com.termux/files/usr/bin:"*) ;; *) export PATH="/data/data/com.termux/files/usr/bin:$PATH";; esac
+# <<< clipso <<<
+# >>> clipso-keybinding >>>
+_wrap_clipso() {
+  [[ -z $BUFFER ]] && return
+  local _c=$BUFFER
+  local _tmp
+  _tmp=$(mktemp "${TMPDIR:-/tmp}/clipso-cmd.XXXXXX")
+  printf "#!/usr/bin/env bash\n%s\n" "$_c" > "$_tmp"
+  print -s "$_c"
+  BUFFER="clipso run $_tmp"
+  zle accept-line
+}
+_clipso_zshaddhistory() {
+  [[ "$1" == "clipso run /"* ]] && return 1
+  return 0
+}
+autoload -Uz add-zsh-hook
+add-zsh-hook zshaddhistory _clipso_zshaddhistory
+zle -N _wrap_clipso
+bindkey "^[g" _wrap_clipso
+# <<< clipso-keybinding <<<
 
 # >>> bw >>>
 # Bitwarden CLI session persistence. The session token lives in a
