@@ -43,7 +43,7 @@ Idempotent: re-running converges to the current source tree.
 ## Shell autostart: byobu
 
 Every interactive zsh enters byobu (tmux backend) with session name
-`main`. The block lives at the end of `dotfiles/.zshrc` and is guarded:
+`s1`. The block lives at the end of `dotfiles/.zshrc` and is guarded:
 
 - interactive shell (`$-` contains `i`)
 - real TTY on stdout
@@ -52,11 +52,40 @@ Every interactive zsh enters byobu (tmux backend) with session name
 - not explicitly disabled (`ZSH_NO_BYOBU=1`)
 - byobu installed
 
-`byobu new-session -A -s main` creates the session on first entry and
+`byobu new-session -A -s s1` creates the session on first entry and
 attaches to it on every subsequent entry, from any shell or any node:
 one session reused, not a new one per shell.
 
 Exit is two-step: `Ctrl-d` leaves byobu, `Ctrl-d` again leaves the shell.
+
+### Numbering
+
+`base-index` and `pane-base-index` are set to 1, so the first window is
+`w1` and the first pane in it is `1`. The window label in the status bar
+is derived from the index (`wN`), never from the running command: labels
+stay stable as you switch panes.
+
+The top border of each pane shows `N:command · path` (the pane index, the
+program running in it, and its working directory, with `$HOME` shortened
+to `~`). The active pane is highlighted (colour214); others are dim.
+
+### Status bar
+
+Only four modules are enabled in `tmux_left` / `tmux_right`:
+`session`, `updates_available`, `date`, `time`. Everything else byobu
+ships (uptime, load_average, cpu_*, memory, disk, swap, ip_address, ...)
+is disabled: it re-reads `/proc` or shells out on every refresh and
+brings no signal worth the cost.
+
+### ifconfig shim
+
+`dotfiles/.local/bin/ifconfig` (installed to `~/.local/bin/ifconfig`) is
+a wrapper around `$PREFIX/bin/ifconfig`. On Termux without root, toybox
+ifconfig cannot read `/proc/net/dev` and prints
+`Warning: cannot open /proc/net/dev` on every call; byobu evaluates the
+`ip_address` module even when it is disabled in the bar, so the warning
+fires at every session start. The shim exits silently when
+`/proc/net/dev` is unreadable and execs the real ifconfig otherwise.
 
 ## Clipboard helper
 
