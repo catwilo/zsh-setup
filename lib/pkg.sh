@@ -28,11 +28,35 @@ pkg_install() {
 
 # ── Install from .env list ────────────────────────────────────────────────────
 # Format: one package per line, # comments allowed
+#
+# Only the packages that are actually missing are handed to the package
+# manager. That makes the install idempotent at the package-manager
+# boundary: a second run touches nothing, and a temporary failure of the
+# upstream mirror (rate limit, maintenance) cannot break a node whose
+# packages are already installed.
+#
+# dpkg -s is the universal query: Termux ships dpkg too, so the same test
+# works on both platforms without a per-PMGMR branch.
+_pkg_missing() {
+  local _pm_pkg
+  for _pm_pkg in "$@"; do
+    dpkg -s "$_pm_pkg" >/dev/null 2>&1 || printf '%s\n' "$_pm_pkg"
+  done
+}
+
 pkg_install_file() {
   require_file "$1"
   local pkgs
   pkgs="$(grep -v '^\s*#' "$1" | grep -v '^\s*$' | tr '\n' ' ')"
   [ -z "$pkgs" ] && { warn "Lista vacía: $1"; return 0; }
   # shellcheck disable=SC2086
-  pkg_install $pkgs
+  local missing
+  missing="$(_pkg_missing $pkgs | tr '\n' ' ')"
+  if [ -z "$missing" ]; then
+    ok "Paquetes ya instalados: $(printf '%s' "$pkgs" | wc -w)"
+    return 0
+  fi
+  warn "Paquetes a instalar: $missing"
+  # shellcheck disable=SC2086
+  pkg_install $missing
 }
