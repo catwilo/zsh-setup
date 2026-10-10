@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # core.sh — shared helpers: colors, logging, guards
 # Source this first in every lib module and in install.sh
 

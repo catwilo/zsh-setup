@@ -117,3 +117,52 @@ bwunlock() {
   fi
 }
 # <<< bw <<<
+
+# >>> motd on first shell of a tmux session >>>
+# Termux prints the motd (ASCII logo) on login. byobu clears the screen
+# when it paints its layout, so that motd is lost. Show it again inside
+# the first shell that runs in a fresh tmux session. A per-session
+# environment marker records that it has been shown, so subsequent
+# shells (Ctrl-b c, split panels) stay silent; when the tmux server
+# exits, the marker disappears and the next session shows the motd
+# again.
+if [ -n "${TMUX:-}" ] && [ -t 1 ]; then
+    if ! tmux show-environment _ZSH_MOTD_SHOWN >/dev/null 2>&1; then
+        tmux set-environment _ZSH_MOTD_SHOWN 1
+        _motd=""
+        if [ -r /data/data/com.termux/files/usr/etc/motd ]; then
+            _motd=/data/data/com.termux/files/usr/etc/motd
+        elif [ -r /etc/motd ]; then
+            _motd=/etc/motd
+        fi
+        [ -n "$_motd" ] && cat "$_motd"
+    fi
+fi
+# <<< motd on first shell of a tmux session <<<
+
+# >>> byobu autostart >>>
+# Every interactive zsh enters byobu (tmux backend) with the session name
+# "main". Entry is guarded, in this order:
+#   - interactive shell ($- contains i)
+#   - real TTY on stdout
+#   - not already inside tmux/byobu ($TMUX unset)
+#   - not captured by a wrapper: clipso exports CLIPSO_ACTIVE and
+#     UT_NO_ATTACH to signal "no interactive side-effects"
+#   - not explicitly disabled (ZSH_NO_BYOBU=1)
+#   - byobu is installed
+# `new-session -A -s s1` creates the session named "s1" on first entry
+# and attaches to it on every subsequent entry, from any shell or any
+# node: the same session is reused instead of piling up new ones.
+# Additional sessions, if ever needed, are named by the user with
+# Ctrl-a $ inside tmux (the standard tmux rename key).
+# Exit is two-step: Ctrl-d leaves byobu, Ctrl-d again leaves the shell.
+if [[ $- == *i* ]] \
+   && [ -t 1 ] \
+   && [ -z "${TMUX:-}" ] \
+   && [ -z "${CLIPSO_ACTIVE:-}" ] \
+   && [ -z "${UT_NO_ATTACH:-}" ] \
+   && [ -z "${ZSH_NO_BYOBU:-}" ] \
+   && command -v byobu >/dev/null 2>&1; then
+    byobu new-session -A -s s1
+fi
+# <<< byobu autostart <<<

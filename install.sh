@@ -71,15 +71,15 @@ _set_default_shell
 verify_plugins
 
 if [ "$SETUP_MPD" = "1" ]; then
-  . "$SETUP_DIR/optional/mpd/install.sh"
+  . "$SETUP_DIR/lib/optional/mpd/main.sh"
   setup_mpd
 fi
 
-# macOS bootstrap — sourced only under Darwin so POSIX sh never parses the
-# bash-array syntax inside optional/mac/install.sh.
+# macOS bootstrap -- sourced only under Darwin so POSIX sh never parses
+# the bash-array syntax inside lib/optional/mac/main.sh.
 if [ "$SETUP_MAC" = "1" ] || [ "$(uname)" = "Darwin" ]; then
   if [ "$(uname)" = "Darwin" ]; then
-    . "$SETUP_DIR/optional/mac/install.sh"
+    . "$SETUP_DIR/lib/optional/mac/main.sh"
     setup_mac
   else
     warn "--mac ignored: not macOS"

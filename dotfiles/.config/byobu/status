@@ -1,39 +1,39 @@
-#    status - Byobu's default status enabled/disabled settings
+#    status - Byobu's status layout overrides.
 #
-#      Override these in $BYOBU_CONFIG_DIR/status
-#      where BYOBU_CONFIG_DIR is XDG_CONFIG_HOME if defined,
-#      and $HOME/.byobu otherwise.
-#
-#    Copyright (C) 2009-2011 Canonical Ltd.
-#    Copyright (C) 2023 Dustin Kirkland
-#
-#    Authors: Dustin Kirkland <kirkland@byobu.org>
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, version 3 of the License.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
-#
-#    You should have received a copy of the GNU General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#      Overrides the defaults shipped with byobu. The layout below keeps
+#      only what earns its place on the bar; everything else byobu offers
+#      is intentionally absent because it re-reads /proc or shells out
+#      on every refresh for values that do not need to be watched.
 
-# Status beginning with '#' are disabled.
+# Modules kept:
+#   session             name of the current tmux session (native)
+#   updates_available   count of packages with an upgrade pending; the
+#                       value is cached and recomputed only when the
+#                       package index changes, never on every refresh
+#   date, time          local date and time
+# The window list (index:name of each window) is native tmux and lives
+# between the left and right blocks; see .tmux.conf.
 
-# Screen has two status lines, with 4 quadrants for status
-screen_upper_left="color"
-screen_upper_right="color whoami hostname ip_address menu"
-screen_lower_left="color logo distro release #arch session"
-screen_lower_right="color network #disk_io custom #entropy raid reboot_required updates_available #apport #services #mail users uptime #fan_speed #cpu_temp battery wifi_quality #processes #packages load_average cpu_count cpu_freq memory #swap disk #time_utc date time"
+# Every module NOT listed here was dropped on purpose. Worth naming one:
+# ip_address. It calls `ifconfig <iface>`, and on Termux without root
+# ifconfig cannot read /proc/net/dev, so it printed
+# "Warning: cannot open /proc/net/dev (Permission denied). Limited output."
+# to the terminal on every repaint. The rest (uptime, load_average,
+# cpu_count, cpu_freq, memory, disk, swap, raid, reboot_required,
+# entropy, fan_speed, battery, wifi_quality, processes, packages, mail,
+# services, whoami, hostname, network, distro, release, arch, logo,
+# users, apport, custom, menu, time_utc, time_binary) re-read files or
+# fork commands on a fixed interval and bring no signal worth the noise.
 
-# Tmux has one status line, with 2 halves for status
-tmux_left="logo #distro release #arch session"
-# You can have as many tmux right lines below here, and cycle through them using Shift-F5
-tmux_right="#network #disk_io #custom #entropy raid reboot_required updates_available #apport #services #mail #users uptime #fan_speed #cpu_temp #battery #wifi_quality #processes #packages load_average cpu_count cpu_freq memory #swap disk #whoami #hostname #ip_address #time_utc date time"
-#tmux_right="network disk_io uptime processes packages load_average cpu_count cpu_freq memory disk date time"
-#tmux_right="network #disk_io #custom entropy raid reboot_required updates_available #apport #services #mail users uptime fan_speed cpu_temp battery wifi_quality #processes #packages load_average cpu_count cpu_freq memory #swap #disk whoami hostname ip_address #time_utc date time"
-#tmux_right="network #disk_io custom #entropy raid reboot_required updates_available #apport #services #mail users uptime #fan_speed #cpu_temp battery wifi_quality #processes #packages load_average cpu_count cpu_freq memory #swap #disk #whoami #hostname ip_address #time_utc date time"
-#tmux_right="#network disk_io #custom entropy #raid #reboot_required #updates_available #apport #services #mail #users #uptime fan_speed cpu_temp #battery #wifi_quality #processes #packages #load_average #cpu_count #cpu_freq #memory #swap whoami hostname ip_address #time_utc disk date time"
+# Screen layouts: unused; cleared so nothing is evaluated for them either.
+screen_upper_left=""
+screen_upper_right=""
+screen_lower_left=""
+screen_lower_right=""
+
+# Tmux status line: one bar, two halves.
+#   left   session name + pending updates
+#   right  date + time
+# The window list sits between them (native tmux, see profiles/tmux).
+tmux_left="session updates_available"
+tmux_right="date time"

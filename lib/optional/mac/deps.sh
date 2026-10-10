@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 #!/usr/bin/env bash
 # deps.sh — ensure a healthy Nix and required packages on macOS. Idempotent.
 #

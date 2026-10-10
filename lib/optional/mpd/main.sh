@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # mpd.sh — MPD setup: Termux (PulseAudio) + Debian/Raspbian headless (ALSA)
 # Requires: core.sh, detect.sh (PLATFORM set via init_platform)
 

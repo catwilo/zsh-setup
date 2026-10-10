@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 #!/usr/bin/env bash
 # repair-nix.sh — clean up a BROKEN Nix install on macOS (volume + daemons +
 # synthetic.conf + fstab present, but /nix/store unpopulated).

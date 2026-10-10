@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 #!/usr/bin/env bash
 # nix.sh — Nix state detection (read-only) for setup-mac.
 #

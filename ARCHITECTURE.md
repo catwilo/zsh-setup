@@ -5,10 +5,10 @@ macOS. The repo is authoritative; `$HOME` is a deployment target.
 
 ## Principle
 
-`dotfiles/install.sh` copies the versioned files into `$HOME` on every
-install. Symlinks are intentionally avoided: the ecosystem standard
-(`ai.md`, DOTFILES) requires `cp -RfL`, because a symlinked `.zshrc`
-breaks under atomic-copy installers and cross-node sync.
+`lib/links.sh` copies the versioned files into `$HOME` on every install.
+Symlinks are intentionally avoided: the ecosystem standard (`ai.md`,
+DOTFILES) requires `cp -RfL`, because a symlinked `.zshrc` breaks under
+atomic-copy installers and cross-node sync.
 
 ## Layers
 
@@ -18,7 +18,15 @@ breaks under atomic-copy installers and cross-node sync.
       detect.sh                      PLATFORM resolution
       pkg.sh                         per-platform package installer
       plugins.sh                     zsh plugin fetcher + verifier
-      links.sh                       invokes dotfiles/install.sh
+      links.sh                       atomic copy of dotfiles/ into $HOME
+      optional/                      opt-in extras, sourced only when asked
+        mpd/main.sh                  MPD + ncmpcpp setup (--mpd)
+        mac/main.sh                  macOS bootstrap (--mac)
+        mac/deps.sh                  Homebrew / system deps
+        mac/nix.sh                   Nix install / repair helpers
+        mac/path.sh                  PATH wiring for non-interactive shells
+        mac/repair-nix.sh            one-shot repair script
+        mac/versions.env             pinned package versions
     dotfiles/                        canonical files, copied into $HOME
       .zshrc .zshenv .zprofile       shell baseline
       .gitconfig .vimrc .prettierrc  tool baselines
@@ -28,13 +36,9 @@ breaks under atomic-copy installers and cross-node sync.
         clipso.zsh                   Alt+G wrapper, zshaddhistory filter
         main.zsh                     legacy aliases + bindkeys (standalone)
         termux.zsh debian.zsh macos.zsh pc.zsh    platform deltas
-      .config/                       ranger, starship, alacritty, i3, ...
+      .config/                       ranger, byobu, starship, alacritty, i3, ...
       .termux/                       Termux terminal properties
-      install.sh                     per-file atomic copy
     packages/<platform>.env          package lists
-    optional/mpd/                    MPD + ncmpcpp setup
-    optional/mac/                    Nix / deps / PATH bootstrap
-    configs/                         legacy, kept empty
 
 ## Install flow
 
@@ -44,7 +48,7 @@ breaks under atomic-copy installers and cross-node sync.
    declares `#!/usr/bin/env bash`.
 4. `pkg_install_file packages/<platform>.env`.
 5. `install_plugins` -- clones/updates zsh plugins under `.addons-zsh/`.
-6. `link_dotfiles` -> `dotfiles/install.sh` -- atomic copy per file.
+6. `link_dotfiles` -- atomic copy per file into `$HOME`.
 7. `_set_default_shell` -- reads `~/.termux/shell` on Termux, `$SHELL`
    elsewhere. On Termux `$SHELL` reflects the running process, not what
    a new session will launch, so it is not authoritative there.
@@ -77,11 +81,32 @@ breaks under atomic-copy installers and cross-node sync.
 
 ## Dotfiles copy strategy
 
-`dotfiles/install.sh` stages each file in
+`link_dotfiles()` (in `lib/links.sh`) stages each file in
 `<dstdir>/.link-tmp.XXXXXX/<name>` and then `mv -f` over the
 destination. Stage-then-mv guarantees a process kill between writes
 never leaves the destination missing. Copying (`cp -RfL`), not
 symlinking, is required by the ecosystem standard.
+
+## byobu autostart
+
+The block at the end of `dotfiles/.zshrc` runs once per interactive
+shell. Guards, in order:
+
+    [[ $- == *i* ]]                            interactive shell
+    [ -t 1 ]                                   real TTY on stdout
+    [ -z "${TMUX:-}" ]                         not already inside tmux
+    [ -z "${CLIPSO_ACTIVE:-}" ]                not captured by a wrapper
+    [ -z "${UT_NO_ATTACH:-}" ]                 not captured by a wrapper
+    [ -z "${ZSH_NO_BYOBU:-}" ]                 explicit escape hatch
+    command -v byobu >/dev/null 2>&1           byobu installed
+
+Then: `byobu new-session -A -s main`.
+
+`CLIPSO_ACTIVE` and `UT_NO_ATTACH` are the generic capture contract:
+any wrapper that captures stdout (clipso, a test harness, a script)
+sets one of them to declare that interactive side-effects must not run.
+The names are not clipso-specific; `ut` itself sets `UT_NO_ATTACH` in
+the same way for its own nested calls.
 
 ## Invariants
 
@@ -96,6 +121,13 @@ symlinking, is required by the ecosystem standard.
 - **`lib/` modules are sourced by `install.sh` only**, in the fixed
   order core, detect, pkg, plugins, links. A module that needs
   `core.sh` must source it or declare it as a dependency.
+- **`lib/optional/` modules are sourced by `install.sh` only when the
+  corresponding flag is passed.** They receive `$SETUP_DIR` and the
+  core helpers (`ok`, `info`, `err`, `run`, `step`, `warn`) already in
+  scope.
+- **`byobu new-session -A -s main` is idempotent.** One session named
+  `main` across the whole fleet; entering from any shell or node
+  attaches to the same one.
 
 ## Platform matrix
 

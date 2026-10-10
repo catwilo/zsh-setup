@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # detect.sh — platform and package manager detection
 # Requires: core.sh
 

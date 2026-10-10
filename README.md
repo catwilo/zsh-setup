@@ -17,12 +17,18 @@ Idempotent: re-running converges to the current source tree.
 
 ## Structure
 
-    dotfiles/           canonical dotfiles, copied to $HOME on install
-    lib/                installer primitives (core, detect, pkg, plugins, links)
-    packages/           per-platform package lists
-    optional/           opt-in extras (mpd, mac bootstrap)
-    configs/            legacy, kept empty
     install.sh          entrypoint
+    lib/                installer modules, sourced in fixed order:
+      core.sh           colors, logging, dry-run, guards
+      detect.sh         $PLATFORM resolution
+      pkg.sh            per-platform package installer
+      plugins.sh        zsh plugin fetcher + verifier
+      links.sh          atomic copy of dotfiles/ into $HOME
+      optional/
+        mpd/main.sh     MPD stack (--mpd)
+        mac/            macOS bootstrap (--mac): main + deps + nix + path
+    dotfiles/           canonical files, copied into $HOME
+    packages/           per-platform package lists
 
 ## History behavior
 
@@ -33,6 +39,24 @@ Idempotent: re-running converges to the current source tree.
 - `preexec()` writes each command to the histfile directly and mirrors
   `HISTORY_IGNORE` by hand: `clipso run /...`, `clipso write ...` and
   `clipso paste` are never recorded.
+
+## Shell autostart: byobu
+
+Every interactive zsh enters byobu (tmux backend) with session name
+`main`. The block lives at the end of `dotfiles/.zshrc` and is guarded:
+
+- interactive shell (`$-` contains `i`)
+- real TTY on stdout
+- not already inside tmux/byobu (`$TMUX` unset)
+- not captured by a wrapper (`CLIPSO_ACTIVE` and `UT_NO_ATTACH` unset)
+- not explicitly disabled (`ZSH_NO_BYOBU=1`)
+- byobu installed
+
+`byobu new-session -A -s main` creates the session on first entry and
+attaches to it on every subsequent entry, from any shell or any node:
+one session reused, not a new one per shell.
+
+Exit is two-step: `Ctrl-d` leaves byobu, `Ctrl-d` again leaves the shell.
 
 ## Clipboard helper
 

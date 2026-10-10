@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # mac.sh — macOS bootstrap: Nix + deps + PATH + clipboard recovery.
 # Absorbed from former setup-mac repo. Requires: core.sh (log helpers).
 # Guarded: macOS-only; no-op elsewhere.
@@ -11,17 +12,17 @@ setup_mac() {
   # shellcheck disable=SC1091
   . "$_MAC_HERE/versions.env"
   # shellcheck disable=SC1091
-  . "$_MAC_HERE/lib/nix.sh"
+  . "$_MAC_HERE/nix.sh"
   # shellcheck disable=SC1091
-  . "$_MAC_HERE/lib/deps.sh"
+  . "$_MAC_HERE/deps.sh"
   # shellcheck disable=SC1091
-  . "$_MAC_HERE/lib/path.sh"
+  . "$_MAC_HERE/path.sh"
 
   step "1/4  Detect Nix state"
   _state="$(classify_nix_state)"
   info "Nix state: $_state"
   if [ "$_state" = "broken" ]; then
-    err "Nix broken. Run: optional/mac/repair-nix.sh  then reboot, then re-run."
+    err "Nix broken. Run: lib/optional/mac/repair-nix.sh  then reboot, then re-run."
     return 1
   fi
   step "2/4  Ensure Nix"

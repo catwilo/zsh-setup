@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 #!/usr/bin/env bash
 # path.sh — ensure Nix + ~/.local/bin are on PATH for NON-INTERACTIVE shells.
 #

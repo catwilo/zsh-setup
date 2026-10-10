@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # shellcheck shell=sh
 # plugins.sh — install zsh plugins from dotconfig bundle or upstream fallback
 # Requires: core.sh, detect.sh (PLATFORM set via init_platform)
@@ -6,7 +7,7 @@
 #   1. Copy from zsh-setup/dotfiles/.addons-zsh/<name>  (curated bundle, no network)
 #   2. git clone upstream                       (fallback if bundle missing)
 #
-# aliass/ is a dotfile — linked by dotfiles/install.sh, NOT handled here.
+# aliass/ is a dotfile -- copied by lib/links.sh, NOT handled here.
 
 PLUGINS_DIR="$HOME/.addons-zsh"
 PLUGINS_LIST="fzf fzf-tab zsh-autosuggestions fast-syntax-highlighting"

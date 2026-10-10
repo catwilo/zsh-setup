@@ -76,3 +76,13 @@
 # Set this to zero to hide seconds int the time display
 # Default 1
 #TIME_SECONDS=0
+
+# --- Termux overrides (added by zsh-setup) --------------------------------
+# ifconfig from toybox cannot read /proc/net/dev without root, so
+# every call leaks "Warning: cannot open /proc/net/dev" to the
+# terminal. Pinning the monitored interface short-circuits the
+# get_network_interface() path that would otherwise fall back to
+# ifconfig. IP_EXTERNAL is off because the public IP is not useful
+# here and its detection fires a wget on every refresh.
+MONITORED_NETWORK=lo
+IP_EXTERNAL=0

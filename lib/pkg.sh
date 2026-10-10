@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # pkg.sh — unified package install abstraction
 # shellcheck shell=sh
 # Requires: core.sh, detect.sh (PKGMGR set via init_platform)
