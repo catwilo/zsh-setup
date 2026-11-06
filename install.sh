@@ -42,11 +42,22 @@ _set_default_shell() {
     return 0
   fi
   case "$PLATFORM" in
-    termux) run chsh -s zsh ;;
-    debian) run chsh -s "$zsh_bin" ;;
-    macos)  info "macOS: cambia shell con chsh manualmente si es necesario" ;;
+    termux)
+      run chsh -s zsh
+      ok "Shell cambiado a zsh — reinicia la terminal"
+      ;;
+    debian)
+      # chsh uses PAM and needs an interactive password prompt. In the
+      # bootstrap context (installer driven by nodorin tools, stdout
+      # redirected to a log) there is no usable tty, and it fails with
+      # "chsh: PAM: Authentication failure". Print the command for the
+      # user to run once instead of failing the install.
+      info "chsh -s $zsh_bin  (run this once to set zsh as the default shell)"
+      ;;
+    macos)
+      info "macOS: cambia shell con chsh manualmente si es necesario"
+      ;;
   esac
-  ok "Shell cambiado a zsh — reinicia la terminal"
 }
 
 # ── Main ─────────────────────────────────────────────────────────────────────
