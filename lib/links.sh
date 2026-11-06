@@ -48,16 +48,6 @@ link_dotfiles() {
   # Config subdir present everywhere.
   _link .config/ranger
 
-  # Ifconfig shim: on Termux without root, toybox ifconfig cannot read
-  # /proc/net/dev and prints a warning on every call. Byobu pre-computes
-  # the ip_address module even when the bar does not show it, so the
-  # warning fires at every session start. The shim lives in
-  # ~/.local/bin/ifconfig (prepended to PATH by .zshrc) and, when
-  # /proc/net/dev is unreadable, exits without invoking toybox. When it
-  # is readable, execs the real ifconfig unchanged.
-  _link .local/bin/ifconfig
-  chmod +x "$HOME/.local/bin/ifconfig"
-
   # Suppress the login motd. Termux prints /data/data/com.termux/files/usr/etc/motd
   # on every login shell; byobu clears the screen when it paints its layout
   # and that motd is lost anyway. Instead, .zshrc shows the motd once per
