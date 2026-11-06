@@ -9,15 +9,6 @@ font pango:Cantarell Bold 10
 gaps inner 10
 gaps outer 0
 
-workspace 1 output $dp1
-workspace 2 output $dp1
-workspace 3 output $dp1
-workspace 4 output $dp1
-# 5 y 6 para la pantalla enfocada
-workspace 7 output $dp2
-workspace 8 output $dp2
-workspace 9 output $dp2
-workspace 10 output VIRTUAL1 
   
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier Mod1
@@ -154,16 +145,16 @@ bar {
 }
 
 #  Programs Shortcut's
-bindsym Control+Shift+2 exec --no-startup-id "/home/u/scripts/notifydeadd -i mute.svg -t 3000 'Abriendo Firefox' & firefox -p"
-bindsym Control+Shift+1 exec --no-startup-id "alacritty -e lf"
+bindsym Control+Shift+2 exec --no-startup-id "$HOME/unix-toolkit-tools/minitools/desktop/notifydeadd -i mute.svg -t 3000 'Abriendo Firefox' & firefox -p"
+bindsym Control+Shift+1 exec --no-startup-id "alacritty -e ranger"
 #Activar/Desactivar Transparencia
 bindsym Control+Shift+parenright exec --no-startup-id "pkill picom"
 bindsym Control+Shift+parenleft exec --no-startup-id "picom -b"
 #bindsym XF86Launch2 exec --no-startup-id "shutter -s &&  exit"
-bindsym XF86AudioRaiseVolume exec /home/u/scripts/vol +5
-bindsym XF86AudioLowerVolume exec /home/u/scripts/vol -5
-bindsym XF86AudioMute exec /home/u/scripts/toggle-vol 
-bindsym XF86AudioMicMute exec /home/u/scripts/toggle-mic
+bindsym XF86AudioRaiseVolume exec $HOME/unix-toolkit-tools/minitools/audio/vol +5
+bindsym XF86AudioLowerVolume exec $HOME/unix-toolkit-tools/minitools/audio/vol -5
+bindsym XF86AudioMute exec $HOME/unix-toolkit-tools/minitools/audio/toggle-vol 
+bindsym XF86AudioMicMute exec $HOME/unix-toolkit-tools/minitools/audio/toggle-mic
 
 
 
@@ -177,9 +168,9 @@ bindsym XF86AudioMicMute exec /home/u/scripts/toggle-mic
 #bindsym $mod+Shift+w mode "Wacom-mode"
 
 mode "i3-msg-scripts" {
-	bindsym m exec alacritty -e zsh -c "~/scripts/moveWorkspace.sh", mode "default"
-	bindsym r exec alacritty -e zsh -c "~/scripts/renameWorkspace.sh", mode "default"
-	bindsym g exec alacritty -e zsh -c "~/scripts/set-i3-gaps.sh", mode "default"
+	bindsym m exec alacritty -e zsh -c "$HOME/unix-toolkit-tools/minitools/desktop/moveWorkspace.sh", mode "default"
+	bindsym r exec alacritty -e zsh -c "$HOME/unix-toolkit-tools/minitools/desktop/renameWorkspace.sh", mode "default"
+	bindsym g exec alacritty -e zsh -c "$HOME/unix-toolkit-tools/minitools/display/set-i3-gaps.sh", mode "default"
 	bindsym Escape mode "default" 
 }
 bindsym Control+Shift+space mode "i3-msg-scripts"
