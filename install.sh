@@ -73,6 +73,21 @@ fi
 
 pkg_install_file "$SETUP_DIR/packages/$PLATFORM.env"
 
+# starship has no apt package; install via the official curl installer
+# on Debian. Idempotent: skip when the binary is already in PATH.
+if [ "$PLATFORM" = "debian" ]; then
+  if command -v starship >/dev/null 2>&1; then
+    ok "starship ya instalado"
+  else
+    info "starship: instalando via curl installer"
+    if curl -sS https://starship.rs/install.sh | sh -s -- -y >/dev/null 2>&1; then
+      ok "starship instalado"
+    else
+      warn "starship: instalacion fallo, instalalo manualmente"
+    fi
+  fi
+fi
+
 install_plugins
 
 link_dotfiles
